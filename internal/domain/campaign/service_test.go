@@ -2,6 +2,7 @@ package campaign
 
 import (
 	"campaign-engine/internal/contract"
+	internalErrors "campaign-engine/internal/internal-errors"
 	"errors"
 	"testing"
 
@@ -63,11 +64,11 @@ func Test_Create_SaveCampaign(t *testing.T) {
 func Test_Create_ValidateRepositoryError(t *testing.T) {
 	assert := assert.New(t)
 	repositoryMock := new(repositoryMock)
-	repositoryMock.On("Save", mock.Anything).Return(errors.New("internal server error"))
+	repositoryMock.On("Save", mock.Anything).Return(internalErrors.ErrInternal)
 	service.Repository = repositoryMock
 	_, err := service.Create(newCampaign)
 	assert.NotNil(err, "Expected an error when saving the campaign, but got nil.")
-	assert.EqualError(err, "internal server error", "Expected error message to be 'internal server error', but got '%s'.", err.Error())
+	assert.True(errors.Is(err, internalErrors.ErrInternal), "Expected error to be of type ErrInternal, but got: %v", err)
 }
 
 func campaignsEqual(expected contract.NewCampaign, actual *Campaign) bool {
