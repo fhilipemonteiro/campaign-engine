@@ -19,3 +19,11 @@ func (s *Service) Create(data contract.NewCampaign) (string, error) {
 	}
 	return campaign.ID, nil
 }
+
+func (s *Service) GetCampaigns() ([]Campaign, error) {
+	campaigns, err := s.Repository.GetAll()
+	if err != nil {
+		return nil, internalErrors.ErrInternal
+	}
+	return campaigns, nil
+}
